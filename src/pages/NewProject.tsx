@@ -69,7 +69,7 @@ export default function NewProject() {
           <h2><label htmlFor="new-name">Hva skal det hete?</label></h2>
           <input
             className="text" id="new-name" type="text" maxLength={40} autoComplete="off" spellCheck={false} autoFocus
-            placeholder={`F.eks. ${choice.fallbackName === "Nye sokker" ? "Sokker til pappa" : "Skjerf til mamma"}`}
+            placeholder={`F.eks. ${choice.fallbackName === "Nye sokker" ? "Sokker til pappa" : "Vinterskjerf"}`}
             value={name} onChange={(e) => setName(e.target.value.slice(0, 40))}
           />
         </section>
