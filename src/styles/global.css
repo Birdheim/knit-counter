@@ -1,0 +1,47 @@
+/* Rett & Vrang – felles utseende.
+   Fargene og avstandene ligger som variabler her øverst. Endre dem her, så følger hele siden med. */
+:root{
+  /* varm hvit bunn, med dyp rødrosa og blå som aksentfarger */
+  --bg:#FBF6EE;
+  --surface:#FFFFFF;
+  --ink:#232046;
+  --muted:#6C6781;
+  --line:#EBDFD1;
+  --rose:#C8365F;
+  --rose-deep:#9E2548;
+  --blue:#2F55B0;
+  --blue-deep:#22408A;
+  --sun:#F3B23F;
+  --peach:#FBE4D5;
+
+  /* garnfargen til prosjektet som er åpent (settes av tellesiden) */
+  --yarn:#CE3E69;
+  --on-yarn:#231C2E;
+  --needle:#D9A66B;
+  --needle-end:#B77B45;
+
+  --pad:clamp(16px,5vw,24px);
+  --gap:clamp(10px,2.2vh,20px);
+  --r:20px;
+  --font-display:"Grandstander","Nunito",ui-rounded,"Arial Rounded MT Bold",system-ui,sans-serif;
+  --font-body:"Nunito",ui-rounded,system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none !important}
+html,body,#root{height:100%;margin:0}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:var(--font-body);font-weight:500;font-size:16px;line-height:1.35;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  -webkit-text-size-adjust:100%;
+  overscroll-behavior:none;
+}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+
+a{color:inherit}
+
+/* ---------- felles småting ---------- */

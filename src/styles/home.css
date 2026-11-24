@@ -1,0 +1,67 @@
+/* Forsiden: tegningen ligger til høyre på PC og midtstilt over teksten på telefon. */
+.home{
+  max-width:1120px;margin:0 auto;min-height:100%;
+  padding:max(var(--pad),env(safe-area-inset-top)) max(var(--pad),env(safe-area-inset-right))
+          max(var(--pad),28px,env(safe-area-inset-bottom)) max(var(--pad),env(safe-area-inset-left));
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(8px,2.5vh,24px);
+  text-align:center;
+}
+.home-scene{width:100%;max-width:min(520px,58vh)}
+.home-text{width:100%;display:flex;flex-direction:column;align-items:center;gap:clamp(6px,1.4vh,12px)}
+.scene{display:block;width:100%;height:auto;overflow:visible;touch-action:manipulation}
+
+.wordmark{
+  margin:0;font-family:var(--font-display);font-weight:800;line-height:1;letter-spacing:-.01em;
+  font-size:clamp(44px,13vw,84px);text-wrap:balance;
+}
+.wordmark span{color:var(--rose)}
+.tagline{margin:0;font-size:clamp(18px,4.8vw,24px);font-weight:700;color:var(--muted)}
+.ctas{width:100%;max-width:400px;display:flex;flex-direction:column;gap:12px;margin-top:clamp(10px,2.4vh,26px)}
+.cta{
+  display:flex;flex-direction:column;gap:1px;justify-content:center;min-height:64px;padding:10px 22px;
+  border-radius:20px;text-decoration:none;
+  background:var(--rose);color:#fff;box-shadow:0 6px 0 var(--rose-deep);
+  transition:transform .09s ease,box-shadow .09s ease;
+}
+.cta:active{transform:translateY(4px);box-shadow:0 2px 0 var(--rose-deep)}
+.cta b{font-family:var(--font-display);font-weight:800;font-size:21px;line-height:1.15}
+.cta small{font-size:14.5px;font-weight:700;opacity:.92;overflow-wrap:anywhere}
+.cta.plain{background:var(--surface);color:var(--blue);box-shadow:0 6px 0 var(--blue);border:2px solid var(--blue)}
+.cta.plain small{color:var(--muted);opacity:1}
+.cta.plain:active{box-shadow:0 2px 0 var(--blue)}
+
+@media (min-width:900px){
+  .home{flex-direction:row-reverse;justify-content:space-between;gap:clamp(24px,5vw,72px);text-align:left}
+  .home-scene{flex:1.15;max-width:min(640px,78vh)}
+  .home-text{flex:1;align-items:flex-start;max-width:440px}
+}
+
+/* tegningen */
+.blob{fill:var(--peach)}
+.shadow{fill:#EBD5C2}
+.flame{transform-origin:82px 328px}
+.f1{animation:flick 1.6s ease-in-out infinite}
+.f2{animation:flick 1s ease-in-out infinite reverse}
+@keyframes flick{0%,100%{transform:scale(1,1) skewX(0)}30%{transform:scale(.95,1.1) skewX(3deg)}65%{transform:scale(1.05,.93) skewX(-3deg)}}
+.glow{animation:glow 2.6s ease-in-out infinite}
+@keyframes glow{0%,100%{opacity:1}40%{opacity:.7}70%{opacity:.9}}
+.steam{opacity:0;animation:steam 3.4s ease-out infinite}
+.steam.st2{animation-delay:1.7s}
+@keyframes steam{0%{opacity:0;transform:translateY(5px)}30%{opacity:.85}100%{opacity:0;transform:translateY(-14px)}}
+.cat-body{transform-origin:172px 396px;animation:breathe 3.6s ease-in-out infinite}
+@keyframes breathe{50%{transform:scaleY(1.07)}}
+.pin-a{transform-origin:287px 272px;animation:tick-a .7s ease-in-out infinite alternate}
+.pin-b{transform-origin:321px 272px;animation:tick-b .7s ease-in-out infinite alternate}
+@keyframes tick-a{from{transform:rotate(-3deg)}to{transform:rotate(4deg)}}
+@keyframes tick-b{from{transform:rotate(3deg)}to{transform:rotate(-4deg)}}
+.lids{transform-origin:304px 161px;transform:scaleY(0);animation:blink 5.5s infinite}
+@keyframes blink{0%,94%,100%{transform:scaleY(0)}96.5%{transform:scaleY(1)}}
+.brows{transition:transform .18s ease}
+.scene.close .brows{transform:translateY(-5px)}
+.scene.close .pin{animation-play-state:paused}
+.mouth{transition:d .18s ease}
+.scene.close .mouth{d:path("M299 194q5 2.500 10 0")}
+
+@media (prefers-reduced-motion:reduce){
+  .steam{opacity:.6}
+}
