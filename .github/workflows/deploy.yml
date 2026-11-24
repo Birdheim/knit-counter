@@ -1,5 +1,8 @@
 # Bygger siden og legger den ut på GitHub Pages hver gang du pusher til main.
 # Krever at Pages er satt til «GitHub Actions» under Settings → Pages → Source.
+#
+# Bygging og utlegging er to jobber med vilje. Når de lå i samme jobb, rakk ikke GitHub
+# alltid å registrere de opplastede filene før utleggingen lette etter dem, og da feilet den.
 name: Legg ut på GitHub Pages
 
 on:
@@ -18,10 +21,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
+    name: Test og bygg
     runs-on: ubuntu-latest
     steps:
       - name: Hent koden
@@ -43,6 +44,15 @@ jobs:
         uses: actions/upload-pages-artifact@v5
         with:
           path: "./dist"
+
+  deploy:
+    name: Legg ut
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Legg ut
         id: deployment
         uses: actions/deploy-pages@v5
