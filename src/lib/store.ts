@@ -91,10 +91,10 @@ export function setActive(id: string) {
 }
 
 /** Start et nytt prosjekt fra en oppskrift. Gir id-en tilbake, eller null hvis det er fullt. */
-export function addProject(pattern: { castOn: number; parts: Part[]; example?: boolean }, name: string, yarn: string): string | null {
+export function addProject(pattern: { castOn: number; parts: Part[]; example?: boolean; check?: string[] | null }, name: string, yarn: string): string | null {
   if (state.projects.length >= MAX_PROJECTS) return null;
   const project = cleanProject({
-    id: newId(), name, count: 0, yarn, castOn: pattern.castOn, parts: pattern.parts, closed: {}, last: {}, example: !!pattern.example,
+    id: newId(), name, count: 0, yarn, castOn: pattern.castOn, parts: pattern.parts, closed: {}, last: {}, example: !!pattern.example, check: pattern.check ?? null,
   });
   store.update((d) => {
     d.projects.push(project);

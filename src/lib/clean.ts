@@ -20,6 +20,9 @@ export function newId(): string {
 }
 const okId = (v: unknown) => (typeof v === "string" && /^[a-z0-9-]{1,24}$/.test(v) ? v : newId());
 
+/** Merknaden i et eksempel som er tatt ut. Skrives om der den ligger lagret fra før. */
+const OLD_NOTE = "til skjerfet er langt nok";
+
 export function cleanPart(input: unknown): Part {
   const p = obj(input);
   let type: PartType = p.type === "dec" || p.type === "plain" || p.type === "measure" ? p.type : "inc";
@@ -34,23 +37,32 @@ export function cleanPart(input: unknown): Part {
     target: int(p.target, 0, 999, 10),
     rows: type === "plain" ? Math.max(1, rows) : rows,
     cm: int(p.cm, 0, 999, 0),
-    note: typeof p.note === "string" ? p.note.slice(0, 60) : "",
+    note: typeof p.note === "string" ? (p.note === OLD_NOTE ? "til det er langt nok" : p.note.slice(0, 60)) : "",
   };
 }
 
-/** Tallene i de ferdige oppskriftene er eksempler, ikke hentet fra en utgitt oppskrift. */
+/** Eksemplene du kan starte fra. Tallene er funnet på, ikke hentet fra en utgitt oppskrift.
+    Den første er også det et helt nytt prosjekt uten oppskrift starter med. */
 export const BUILTIN: BuiltinPattern[] = [
   {
-    id: "b-skjerf", name: "Skjerf fra spiss til spiss", desc: "Øk, strikk til mål, fell. Tallene er eksempler.",
-    castOn: 5, example: true, projectName: "Nytt skjerf",
+    id: "b-klut", name: "Klut fra hjørne til hjørne", desc: "Øk til kluten er bred nok, og fell tilbake igjen.",
+    castOn: 3, example: true, projectName: "Ny klut",
     parts: [
-      { type: "inc", name: "Øk", by: 1, every: 6, target: 15 },
-      { type: "measure", name: "Midten", note: "til skjerfet er langt nok" },
-      { type: "dec", name: "Fell", by: 1, every: 6, target: 5 },
+      { type: "inc", name: "Øk", by: 1, every: 1, target: 45 },
+      { type: "dec", name: "Fell", by: 1, every: 1, target: 3 },
     ].map(cleanPart),
   },
   {
-    id: "b-sokker", name: "Sokker", desc: "Vrangbord, legg, hæl, fot og tå, målt i cm. Tallene er eksempler.",
+    id: "b-lue", name: "Lue", desc: "Vrangbord, strikk til mål, og fell i toppen.",
+    castOn: 96, example: true, projectName: "Ny lue",
+    parts: [
+      { type: "measure", name: "Vrangbord", cm: 5 },
+      { type: "measure", name: "Glattstrikk", cm: 18 },
+      { type: "dec", name: "Fell i toppen", by: 8, every: 2, target: 8 },
+    ].map(cleanPart),
+  },
+  {
+    id: "b-sokker", name: "Sokker", desc: "Vrangbord, legg, hæl, fot og tå, målt i cm.",
     castOn: 60, example: true, projectName: "Nye sokker",
     parts: [
       { type: "measure", name: "Vrangbord", cm: 5 },
@@ -79,11 +91,12 @@ export function cleanProject(input: unknown): Project {
     name: typeof o.name === "string" ? o.name.slice(0, 40) : "Mitt strikketøy",
     count: int(o.count, 0, 99999, 0),
     yarn: YARNS.some((y) => y.id === o.yarn) ? (o.yarn as string) : YARNS[0].id,
-    castOn: int(o.castOn, 1, 999, 5),
+    castOn: int(o.castOn, 1, 999, has ? 5 : BUILTIN[0].castOn),
     parts: has ? (o.parts as unknown[]).slice(0, MAX_PARTS).map(cleanPart) : BUILTIN[0].parts.map(cleanPart),
     closed: has ? rowMap(o.closed) : {},
     last: has ? rowMap(o.last) : {},
     example: has ? o.example === true : true,
+    check: Array.isArray(o.check) ? o.check.filter((x): x is string => typeof x === "string").slice(0, 6).map((x) => x.slice(0, 200)) : null,
   };
 }
 

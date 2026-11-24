@@ -130,3 +130,6 @@ a.icon-btn{text-decoration:none}
   .app > *{grid-column:2}
   .stage{grid-column:1;grid-row:1 / span 5;min-height:240px;align-self:stretch}
 }
+
+/* lest av AI og ikke sett over ennå */
+.ai-flag{display:block;padding:8px 12px;border-radius:12px;background:color-mix(in srgb,var(--sun) 20%,var(--surface));color:var(--ink);font-size:13.5px;font-weight:800;text-decoration:none;text-align:center}

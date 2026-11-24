@@ -82,7 +82,7 @@ export function Scene() {
           <stop offset="0" stopColor="#FFB45C" stopOpacity=".55" />
           <stop offset="1" stopColor="#FFB45C" stopOpacity="0" />
         </radialGradient>
-        <pattern id="scarf-knit" width="12" height="10" patternUnits="userSpaceOnUse">
+        <pattern id="knit-fill" width="12" height="10" patternUnits="userSpaceOnUse">
           <path d="M1.5 1.5L6 8L10.5 1.5" fill="none" stroke="#D58F1E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity=".7" />
         </pattern>
       </defs>
@@ -166,7 +166,7 @@ export function Scene() {
       {/* strikketøyet og garnet */}
       <path d="M236 387q22 9 46 2" fill="none" stroke="#F3B23F" strokeWidth="3" strokeLinecap="round" />
       <path d="M290 284h28l14 106q-28 7-56 0z" fill="#F3B23F" />
-      <path d="M290 284h28l14 106q-28 7-56 0z" fill="url(#scarf-knit)" />
+      <path d="M290 284h28l14 106q-28 7-56 0z" fill="url(#knit-fill)" />
       <circle cx="224" cy="383" r="14" fill="#F3B23F" />
       <path d="M213 377q11-8 22 0M212 386q12-9 24 0M219 395q6-5 12-1" fill="none" stroke="#D58F1E" strokeWidth="2" strokeLinecap="round" />
 

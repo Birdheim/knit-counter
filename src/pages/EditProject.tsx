@@ -46,7 +46,7 @@ export default function EditProject() {
         <h2><label htmlFor="name">Navn</label></h2>
         <input
           className="text" id="name" type="text" maxLength={40} autoComplete="off" spellCheck={false}
-          placeholder="F.eks. Sokker til pappa"
+          placeholder="F.eks. Grå ullsokker"
           value={project.name} onChange={(e) => updateProject(project.id, (p) => void (p.name = e.target.value.slice(0, 40)))}
         />
       </section>
@@ -58,6 +58,16 @@ export default function EditProject() {
 
       <section className="sec">
         <h2>Oppskrift</h2>
+        {project.check && (
+          <div className="ai-check" role="note">
+            <b>Lest fra PDF av en AI-modell</b>
+            <p>Den kan ha lest feil. Sjekk delene under mot oppskriften før du strikker.</p>
+            {project.check.length > 0 && (
+              <ul>{project.check.map((line, i) => <li key={i}>{line}</li>)}</ul>
+            )}
+            <button className="btn" type="button" onClick={() => updateProject(project.id, (p) => void (p.check = null))}>Jeg har sjekket tallene</button>
+          </div>
+        )}
         <PatternEditor state={state} project={project} />
       </section>
 
@@ -73,7 +83,7 @@ export default function EditProject() {
       <section className="sec">
         <h2>Slett prosjektet</h2>
         <p>Kan ikke angres. Oppskrifter du har lagret i banken, blir liggende. Hold knappen inne i to sekunder.</p>
-        <HoldButton label="Hold inne for å slette prosjektet" onHold={remove} />
+        <HoldButton danger label="Hold inne for å slette prosjektet" onHold={remove} />
       </section>
     </main>
   );

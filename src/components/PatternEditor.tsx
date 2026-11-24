@@ -141,7 +141,7 @@ export function PatternEditor({ state, project }: { state: AppState; project: Pr
       )}
       {project.parts.length === 0 ? (
         <div className="picks">
-          <p>Eller hent en oppskrift fra banken:</p>
+          <p>Eller start fra en oppskrift i banken eller et eksempel:</p>
           {bankEntries(state).filter((b) => b.parts.length).map((b) => (
             <button
               key={b.id} className="rowbtn" type="button"
@@ -157,6 +157,7 @@ export function PatternEditor({ state, project }: { state: AppState; project: Pr
                 <b>{b.name}</b>
                 <small>{b.desc ?? `${b.parts.length} deler`}</small>
               </span>
+              <span className={b.example ? "tag example" : "tag"}>{b.example ? "Eksempel" : "Banken"}</span>
             </button>
           ))}
         </div>

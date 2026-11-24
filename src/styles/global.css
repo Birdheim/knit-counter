@@ -13,7 +13,7 @@
   --blue-deep:#22408A;
   --sun:#F3B23F;
   --peach:#FBE4D5;
-  --ok:#2C9A68;
+  --ok:#2C9A68; --danger:#C0271C;
 
   /* garnfargen til prosjektet som er åpent (settes av tellesiden) */
   --yarn:#CE3E69;

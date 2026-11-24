@@ -1,19 +1,16 @@
 /* Firebase bak CloudAdapter-grensesnittet. Lastes først når siden trenger det,
    så forsiden slipper å vente på Firebase-biblioteket. */
-import { firebaseConfig } from "../firebase-config";
+import { aiReading, firebaseConfig } from "../firebase-config";
+import { firebaseApp } from "./firebaseApp";
 import type { CloudAdapter } from "./sync";
 import type { AppState } from "./types";
 
 export const cloudConfigured = !!firebaseConfig?.apiKey;
+/** «Les en oppskrift fra PDF» er skrudd på */
+export const canReadPdf = cloudConfigured && aiReading;
 
 export async function loadFirebase(): Promise<CloudAdapter> {
-  if (!firebaseConfig) throw new Error("Firebase er ikke satt opp");
-  const [{ initializeApp }, auth, fs] = await Promise.all([
-    import("firebase/app"),
-    import("firebase/auth"),
-    import("firebase/firestore"),
-  ]);
-  const app = initializeApp(firebaseConfig);
+  const [app, auth, fs] = await Promise.all([firebaseApp(), import("firebase/auth"), import("firebase/firestore")]);
   const a = auth.getAuth(app);
   const db = fs.getFirestore(app);
   const ref = (uid: string) => fs.doc(db, "users", uid);

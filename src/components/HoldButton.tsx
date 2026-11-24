@@ -5,11 +5,13 @@ interface Props {
   label: string;
   /** vises en liten stund etterpå */
   doneLabel?: string;
+  /** rød knapp med søppelbøtte, for sletting */
+  danger?: boolean;
   onHold(): void;
 }
 
 /** Knapp som må holdes inne i to sekunder, for ting det er dumt å gjøre ved et uhell. */
-export function HoldButton({ label, doneLabel, onHold }: Props) {
+export function HoldButton({ label, doneLabel, danger, onHold }: Props) {
   const [holding, setHolding] = useState(false);
   const [done, setDone] = useState(false);
   const timer = useRef<number | undefined>(undefined);
@@ -37,7 +39,7 @@ export function HoldButton({ label, doneLabel, onHold }: Props) {
   return (
     <button
       type="button"
-      className={holding ? "btn hold holding" : "btn hold"}
+      className={`btn hold${danger ? " danger" : ""}${holding ? " holding" : ""}`}
       onPointerDown={(e) => {
         if (!e.button) start();
       }}
@@ -54,6 +56,11 @@ export function HoldButton({ label, doneLabel, onHold }: Props) {
       onKeyUp={stop}
       onContextMenu={(e) => e.preventDefault()}
     >
+      {danger && (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 7h16M10 3.5h4M6.5 7l.8 12a1.6 1.6 0 0 0 1.6 1.5h6.2a1.6 1.6 0 0 0 1.6-1.5l.8-12M10 11v6M14 11v6" />
+        </svg>
+      )}
       <span>{done && doneLabel ? doneLabel : label}</span>
     </button>
   );

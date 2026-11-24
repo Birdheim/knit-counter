@@ -33,6 +33,9 @@ export interface Project {
   last: Record<string, number>;
   /** sant så lenge oppskriften er eksempeltallene */
   example: boolean;
+  /** oppskriften er lest fra PDF av en AI-modell og ikke sett over ennå.
+      Listen er det du bør sjekke (kan være tom). null = ingenting å sjekke. */
+  check: string[] | null;
 }
 
 /** En oppskrift i banken. */

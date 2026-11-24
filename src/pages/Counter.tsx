@@ -92,6 +92,10 @@ export default function Counter() {
         <Link className="pill" to={`/prosjekt/${project.id}/rediger`}>Rediger</Link>
       </header>
 
+      {project.check && (
+        <Link className="ai-flag" to={`/prosjekt/${project.id}/rediger`}>Oppskriften er lest av AI. Sjekk tallene <span aria-hidden="true">→</span></Link>
+      )}
+
       <Steps segs={segs} current={finished ? segs.length : loc.seg?.i ?? 0} />
 
       <NowCard key={arrived ? taps : "still"} info={info} shape={loc.shape} nudge={arrived} />

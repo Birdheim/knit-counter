@@ -97,3 +97,22 @@ describe("deler som måles", () => {
     expect(partLabel({ type: "inc", name: "" })).toBe("Økning");
   });
 });
+
+describe("eksemplene", () => {
+  it("går opp, og det første er det et nytt prosjekt starter med", async () => {
+    const { BUILTIN, clean, cleanPart } = await import("./clean");
+    for (const b of BUILTIN) {
+      const p = { ...clean({}).projects[0], castOn: b.castOn, parts: b.parts };
+      const segs = plan(p);
+      expect(segs).toHaveLength(b.parts.length);
+      for (const s of segs) expect(s.open || s.len > 0).toBe(true);
+    }
+    const first = clean({}).projects[0];
+    expect(first.castOn).toBe(BUILTIN[0].castOn);
+    expect(first.parts).toEqual(BUILTIN[0].parts);
+    expect(first.example).toBe(true);
+    /* merknaden fra et eksempel som er tatt ut, skrives om der den ligger lagret */
+    expect(cleanPart({ type: "measure", note: "til skjerfet er langt nok" }).note).toBe("til det er langt nok");
+    expect(JSON.stringify(BUILTIN).toLowerCase()).not.toContain("skjerf");
+  });
+});
