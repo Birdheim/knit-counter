@@ -1,16 +1,21 @@
-export type PartType = "inc" | "dec" | "plain";
+/** inc = øk, dec = fell, plain = et fast antall rader, measure = strikk til et mål (uten å måtte telle) */
+export type PartType = "inc" | "dec" | "plain" | "measure";
 
-/** Én del av en oppskrift: øk, fell eller strikk rett frem. */
+/** Én del av en oppskrift. */
 export interface Part {
   type: PartType;
+  /** valgfritt navn, f.eks. «Legg» eller «Vrangbord» */
+  name: string;
   /** masker per økning/felling */
   by: number;
   /** hvor mange rader mellom hver økning/felling */
   every: number;
   /** antall masker når delen er ferdig */
   target: number;
-  /** antall rader i en «rett frem»-del. 0 betyr «til mål»: delen varer til du trykker Neste del */
+  /** antall rader i en «plain»-del */
   rows: number;
+  /** målet i en «measure»-del, i cm. 0 betyr at det ikke er satt */
+  cm: number;
   note: string;
 }
 
@@ -22,8 +27,10 @@ export interface Project {
   yarn: string;
   castOn: number;
   parts: Part[];
-  /** hvor mange rader hver «til mål»-del ble, etter at du trykket Neste del (nøkkel = delens indeks) */
+  /** hvor mange rader hver måledel ble, etter at du trykket «Ferdig med delen» (nøkkel = delens indeks) */
   closed: Record<string, number>;
+  /** det samme fra forrige gang du strikket prosjektet, så sokk nummer to kan bli lik den første */
+  last: Record<string, number>;
   /** sant så lenge oppskriften er eksempeltallene */
   example: boolean;
 }

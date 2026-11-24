@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { cleanProject } from "./clean";
-import { locate, plan, profile, summary } from "./pattern";
+import { locate, partLabel, plan, profile, summary } from "./pattern";
 import type { Project } from "./types";
 
 /** Legg opp 4, øk hver 8. rad til 26 masker, strikk til mål, fell hver 8. rad til 4 masker. */
@@ -9,7 +9,7 @@ function scarf(count: number, closed: Record<string, number> = {}): Project {
     id: "a", name: "Skjerf", count, yarn: "bringebaer", castOn: 4, closed, example: false,
     parts: [
       { type: "inc", by: 1, every: 8, target: 26 },
-      { type: "plain", rows: 0, note: "til 30 cm" },
+      { type: "measure", name: "Midten", cm: 30 },
       { type: "dec", by: 1, every: 8, target: 4 },
     ],
   });
@@ -67,7 +67,33 @@ describe("profile og summary", () => {
   });
 
   it("gir en kort status", () => {
-    expect(summary(scarf(27))).toBe("Rad 28 · del 1 av 3");
-    expect(summary(cleanProject({ parts: [], count: 12 }))).toBe("Rad 13");
+    expect(summary(scarf(27))).toBe("Del 1 av 3 · Økning");
+    expect(summary(scarf(200))).toBe("Del 2 av 3 · Midten");
+    expect(summary(cleanProject({ parts: [], count: 12 }))).toBe("12 rader strikket");
+    expect(summary(cleanProject({ parts: [], count: 0 }))).toBe("Ikke startet");
+  });
+});
+
+describe("deler som måles", () => {
+  it("leser gamle «til mål»-deler som måledeler", () => {
+    const p = cleanProject({ parts: [{ type: "plain", rows: 0, note: "til 30 cm" }, { type: "plain", rows: 12 }], count: 0 });
+    expect(p.parts.map((x) => x.type)).toEqual(["measure", "plain"]);
+    expect(plan(p)[0]).toMatchObject({ open: true, len: Infinity });
+    expect(plan(p)[1]).toMatchObject({ open: false, len: 12 });
+  });
+
+  it("teller radene i en måledel og går videre når den avsluttes", () => {
+    const parts = [{ type: "measure", name: "Legg", cm: 15 }, { type: "measure", name: "Fot", cm: 18 }];
+    const knitting = cleanProject({ parts, count: 48 });
+    expect(at(knitting)).toMatchObject({ r: 48 });
+    expect(partLabel(at(knitting).seg!)).toBe("Legg");
+    const done = cleanProject({ parts, count: 50, closed: { "0": 48 } });
+    expect(at(done)).toMatchObject({ r: 2 });
+    expect(partLabel(at(done).seg!)).toBe("Fot");
+  });
+
+  it("bruker typen som navn når delen ikke har et", () => {
+    expect(partLabel({ type: "measure", name: " " })).toBe("Mål");
+    expect(partLabel({ type: "inc", name: "" })).toBe("Økning");
   });
 });

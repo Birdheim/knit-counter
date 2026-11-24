@@ -13,6 +13,7 @@
   --blue-deep:#22408A;
   --sun:#F3B23F;
   --peach:#FBE4D5;
+  --ok:#2C9A68;
 
   /* garnfargen til prosjektet som er åpent (settes av tellesiden) */
   --yarn:#CE3E69;
@@ -45,3 +46,4 @@ button{cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-touch-ca
 a{color:inherit}
 
 /* ---------- felles småting ---------- */
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}

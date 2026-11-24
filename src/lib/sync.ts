@@ -5,7 +5,8 @@ import type { AppState } from "./types";
 
 export interface CloudUser {
   uid: string;
-  label: string;
+  name: string;
+  email: string;
 }
 
 export interface CloudAdapter {
@@ -19,8 +20,14 @@ export interface CloudAdapter {
 }
 
 export interface AccountStatus {
+  /** innlogging er satt opp for siden */
+  available: boolean;
   signedIn: boolean;
   canSignIn: boolean;
+  name: string;
+  email: string;
+  /** local = bare på enheten, synced = alt er på kontoen, pending = lagrer, error = får ikke lagret */
+  sync: "local" | "synced" | "pending" | "error";
   text: string;
 }
 
@@ -66,10 +73,11 @@ export function createSync(deps: Deps) {
   let status = buildStatus();
 
   function buildStatus(): AccountStatus {
+    const who = user ? user.name || user.email || "Google-kontoen din" : "";
     const text = user
       ? syncError
-        ? `Logget inn som ${user.label}, men får ikke lagret på kontoen akkurat nå.`
-        : `Logget inn som ${user.label}. Prosjektene følger kontoen din.`
+        ? `Logget inn som ${who}, men får ikke lagret på kontoen akkurat nå.`
+        : `Logget inn som ${who}. Prosjektene følger kontoen din.`
       : cloud === "off"
         ? "Lagres på denne enheten. Innlogging er ikke satt opp ennå."
         : cloud === "loading"
@@ -77,7 +85,15 @@ export function createSync(deps: Deps) {
           : cloud === "failed"
             ? "Lagres på denne enheten. Fikk ikke kontakt med innloggingen."
             : "Lagres på denne enheten. Logg inn for å ha de samme prosjektene på alle enhetene dine.";
-    return { signedIn: !!user, canSignIn: cloud === "ready" && !user, text };
+    return {
+      available: cloud !== "off",
+      signedIn: !!user,
+      canSignIn: cloud === "ready" && !user,
+      name: user?.name ?? "",
+      email: user?.email ?? "",
+      sync: !user ? "local" : syncError ? "error" : synced ? "synced" : "pending",
+      text,
+    };
   }
   function tell() {
     status = buildStatus();
@@ -182,7 +198,10 @@ export function createSync(deps: Deps) {
     /** kalles etter hver endring på enheten */
     changed() {
       if (!user) return;
-      synced = false;
+      if (synced) {
+        synced = false;
+        tell();
+      }
       clearTimeout(timer);
       timer = setTimeout(flush, delays.save);
     },

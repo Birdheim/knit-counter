@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { AccountChip } from "../components/AccountChip";
 import { Scene } from "../components/Scene";
 import { summary } from "../lib/pattern";
 import { findProject } from "../lib/store";
@@ -15,6 +16,7 @@ export default function Home() {
 
   return (
     <main className="home">
+      <div className="home-bar"><AccountChip /></div>
       <div className="home-scene">
         <Scene />
       </div>
@@ -25,7 +27,7 @@ export default function Home() {
           {started && (
             <Link className="cta" to={`/prosjekt/${current.id}`}>
               <b>Fortsett å strikke</b>
-              <small>{current.name.trim() || "Uten navn"} · {summary(current).toLowerCase()}</small>
+              <small>{current.name.trim() || "Uten navn"} · {summary(current)}</small>
             </Link>
           )}
           <Link className={started ? "cta plain" : "cta"} to="/prosjekter">

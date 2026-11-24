@@ -1,17 +1,4 @@
-/* Oppsett-arket og listene som brukes i det og på «Mine prosjekter». */
-/* ---------- setup sheet ---------- */
-.sheet{position:fixed;inset:0;z-index:5;display:flex;align-items:flex-end;justify-content:center}
-.shade{position:absolute;inset:0;background:rgba(35,32,70,.42);border:0;padding:0;border-radius:0}
-.card{
-  position:relative;width:100%;max-width:480px;max-height:calc(100% - 14px);
-  background:var(--bg);border-radius:24px 24px 0 0;
-  display:flex;flex-direction:column;animation:rise .22s ease-out;
-}
-@keyframes rise{from{transform:translateY(30px);opacity:0}}
-.card-head{flex:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px var(--pad) 10px}
-.card-head h2{margin:0;font-family:var(--font-display);font-weight:800;font-size:24px}
-.done{min-height:44px;padding:0 20px;border-radius:99px;border:0;background:var(--ink);color:var(--bg);font-weight:800;font-size:15px}
-.card-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:0 var(--pad) max(var(--pad),20px,env(safe-area-inset-bottom))}
+/* Skjemaer, lister og knapper som brukes på sidene for prosjekter, redigering og konto. */
 .sec{padding:16px 0;border-top:1.5px solid var(--line);display:flex;flex-direction:column;gap:12px}
 .sec:first-child{border-top:0;padding-top:6px}
 .sec h2,.sec h3{margin:0;font-size:16px;font-weight:800;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
@@ -38,7 +25,10 @@
 .part-no{font-family:var(--font-display);font-weight:800;font-size:17px}
 .x{width:40px;height:40px;margin:-6px -8px -6px 0;border:0;border-radius:50%;background:transparent;color:var(--muted);font-size:22px;font-weight:800;line-height:1}
 .x:active{background:var(--line)}
-.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--bg);border-radius:13px;padding:4px}
+.x:disabled{opacity:.3;cursor:default}
+.part-tools{display:flex;margin-right:-8px}
+.part-tools .x{margin:-6px 0;font-size:19px}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--bg);border-radius:13px;padding:4px}
 .seg button{min-height:40px;border:0;border-radius:10px;background:transparent;font-weight:800;font-size:15px;color:var(--muted);padding:0 4px}
 .seg button[aria-pressed="true"]{background:var(--yarn);color:var(--on-yarn)}
 .part-sum{font-weight:700;font-variant-numeric:tabular-nums}
@@ -66,11 +56,15 @@
 .rowbtn:active{background:color-mix(in srgb,var(--yarn) 14%,var(--surface))}
 .rowbtn.on{border-color:var(--ink)}
 .rowbtn .dot{flex:none;width:18px;height:18px;border-radius:50%}
-.rowbtn .txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
-.rowbtn b{font-weight:800;font-size:16px;overflow-wrap:anywhere}
-.rowbtn small{font-size:13.5px;font-weight:700;color:var(--muted)}
+.txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.txt b{font-weight:800;font-size:16px;overflow-wrap:anywhere}
+.txt small{font-size:13.5px;font-weight:700;color:var(--muted)}
 .rowbtn .tag{flex:none;font-size:12.5px;font-weight:800;color:var(--muted)}
 .rows .x{flex:none;margin:0}
+a.rowbtn{text-decoration:none;color:var(--ink)}
+.rowbtn .go{flex:none;width:20px;height:20px;fill:none;stroke:var(--muted);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.rowbtn.flat{cursor:default}
+.rowbtn.flat:active{background:var(--surface)}
 .picks{display:flex;flex-direction:column;gap:8px}
 
 
@@ -87,3 +81,42 @@
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none !important;transition:none !important}
 }
+
+/* den røde hovedknappen på vanlige sider */
+.primary-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:58px;margin-bottom:5px;padding:0 18px;
+  border:0;border-radius:18px;background:var(--rose);color:#fff;text-decoration:none;
+  font-family:var(--font-display);font-weight:800;font-size:19px;
+  box-shadow:0 5px 0 var(--rose-deep);transition:transform .09s ease,box-shadow .09s ease;
+}
+.primary-btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--rose-deep)}
+.primary-btn:disabled{opacity:.6}
+.primary-btn span{font-size:26px;line-height:.8}
+
+/* nytt prosjekt */
+.form{display:flex;flex-direction:column}
+.form > .primary-btn{margin-top:10px}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choice{display:flex;align-items:center;gap:12px;padding:12px 14px;border:2px solid var(--line);border-radius:16px;background:var(--surface);cursor:pointer}
+.choice.on{border-color:var(--blue);background:color-mix(in srgb,var(--blue) 7%,var(--surface))}
+.choice input{flex:none;width:20px;height:20px;margin:0;accent-color:var(--blue)}
+
+/* kontomerket og kontosiden */
+.chip{
+  flex:none;display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:0 14px;border-radius:99px;
+  border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font-weight:800;font-size:14px;text-decoration:none;
+}
+.chip.on{border-color:color-mix(in srgb,var(--ok) 55%,var(--line))}
+.sync-dot{width:10px;height:10px;border-radius:50%;background:var(--ok)}
+.sync-dot.pending{background:var(--sun)}
+.sync-dot.error{background:var(--rose)}
+.account{display:flex;align-items:flex-start;gap:14px;margin-top:8px;padding:18px;border-radius:20px;border:2px solid var(--line);background:var(--surface)}
+.account.synced,.account.pending{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 8%,var(--surface))}
+.account.error{border-color:var(--rose)}
+.account h2{margin:0 0 2px;font-family:var(--font-display);font-weight:800;font-size:21px}
+.account p{margin:0;color:var(--muted)}
+.account .who{color:var(--ink);font-weight:800}
+.account .sync-line{margin-top:6px;font-weight:700}
+.account-mark{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--line);color:var(--ink);font-weight:800;font-size:20px}
+.account.synced .account-mark,.account.pending .account-mark{background:var(--ok);color:#fff}
+.account.error .account-mark{background:var(--rose);color:#fff}

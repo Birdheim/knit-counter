@@ -20,7 +20,7 @@ export async function loadFirebase(): Promise<CloudAdapter> {
 
   return {
     onUser(cb) {
-      auth.onAuthStateChanged(a, (u) => cb(u ? { uid: u.uid, label: u.email || u.displayName || "Google-kontoen din" } : null));
+      auth.onAuthStateChanged(a, (u) => cb(u ? { uid: u.uid, name: u.displayName ?? "", email: u.email ?? "" } : null));
     },
     /* popup, ikke redirect: redirect virker ikke stabilt når siden ligger på et annet domene enn Firebase */
     async signIn() {

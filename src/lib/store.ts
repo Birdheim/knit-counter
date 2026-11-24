@@ -4,7 +4,7 @@
 import { BUILTIN, clean, cleanPart, cleanProject, fixClosed, MAX_BANK, MAX_PROJECTS, newId } from "./clean";
 import { cloudConfigured, loadFirebase } from "./firebase";
 import { createSync } from "./sync";
-import type { AppState, Pattern, Project } from "./types";
+import type { AppState, Part, Pattern, Project } from "./types";
 import { YARNS } from "./yarns";
 
 const KEY = "knitcounter-v1";
@@ -91,18 +91,58 @@ export function setActive(id: string) {
 }
 
 /** Start et nytt prosjekt fra en oppskrift. Gir id-en tilbake, eller null hvis det er fullt. */
-export function addProject(pattern: Pattern & { example?: boolean }, name: string): string | null {
+export function addProject(pattern: { castOn: number; parts: Part[]; example?: boolean }, name: string, yarn: string): string | null {
   if (state.projects.length >= MAX_PROJECTS) return null;
-  const used = new Set(state.projects.map((p) => p.yarn));
-  const yarn = (YARNS.find((y) => !used.has(y.id)) ?? YARNS[state.projects.length % YARNS.length]).id;
   const project = cleanProject({
-    id: newId(), name, count: 0, yarn, castOn: pattern.castOn, parts: pattern.parts, closed: {}, example: !!pattern.example,
+    id: newId(), name, count: 0, yarn, castOn: pattern.castOn, parts: pattern.parts, closed: {}, last: {}, example: !!pattern.example,
   });
   store.update((d) => {
     d.projects.push(project);
     d.activeId = project.id;
   });
   return project.id;
+}
+
+/** Flytt en del opp (-1) eller ned (+1). Lengdene som hører til delene flyttes med. */
+export function movePart(id: string, index: number, dir: -1 | 1) {
+  editPattern(id, (p) => {
+    const to = index + dir;
+    if (to < 0 || to >= p.parts.length) return;
+    [p.parts[index], p.parts[to]] = [p.parts[to], p.parts[index]];
+    for (const map of [p.closed, p.last]) {
+      const a = map[index];
+      const b = map[to];
+      delete map[index];
+      delete map[to];
+      if (b != null) map[index] = b;
+      if (a != null) map[to] = a;
+    }
+  });
+}
+
+/** Fjern en del. Delene etter får ny indeks, så lengdene må flyttes med. */
+export function removePart(id: string, index: number) {
+  editPattern(id, (p) => {
+    for (const key of ["closed", "last"] as const) {
+      const next: Record<string, number> = {};
+      for (const [k, v] of Object.entries(p[key])) {
+        const i = Number(k);
+        if (i < index) next[i] = v;
+        else if (i > index) next[i - 1] = v;
+      }
+      p[key] = next;
+    }
+    p.parts.splice(index, 1);
+  });
+}
+
+/** Start prosjektet på nytt. Lengdene på måledelene huskes som «forrige gang». */
+export function restartProject(id: string) {
+  updateProject(id, (p) => {
+    if (Object.keys(p.closed).length) p.last = p.closed;
+    p.count = 0;
+    p.closed = {};
+  });
 }
 
 export function deleteProject(id: string) {
@@ -129,6 +169,12 @@ export function saveToBank(id: string): boolean {
 
 export function removeFromBank(id: string) {
   store.update((d) => void (d.bank = d.bank.filter((b) => b.id !== id)));
+}
+
+/** En garnfarge som ikke er i bruk ennå, til et nytt prosjekt. */
+export function freeYarn(s: AppState): string {
+  const used = new Set(s.projects.map((p) => p.yarn));
+  return (YARNS.find((y) => !used.has(y.id)) ?? YARNS[s.projects.length % YARNS.length]).id;
 }
 
 /** Banken: dine egne oppskrifter først, så de ferdige. */

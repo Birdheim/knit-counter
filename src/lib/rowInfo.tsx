@@ -1,8 +1,10 @@
 import type { ReactNode } from "react";
-import { deler, masker, rader, type Location, type Segment } from "./pattern";
+import { deler, hasShaping, masker, partLabel, rader, type Location, type Segment } from "./pattern";
 import type { Project } from "./types";
 
 export interface RowInfo {
+  /** navnet på delen, over tittelen */
+  eyebrow: string;
   title: string;
   sub: string;
   foot: ReactNode;
@@ -16,48 +18,59 @@ const bar = (part: number) => (
   </span>
 );
 
-/** Hva som skal stå om raden du strikker nå. */
+/** Hva som skal stå om det du strikker akkurat nå. */
 export function rowInfo(project: Project, segs: Segment[], loc: Location): RowInfo {
   if (!segs.length) {
     return {
+      eyebrow: "",
       title: "Tell rader",
-      sub: "Legg inn oppskriften i Oppsett, så sier telleren fra når du skal øke eller felle.",
+      sub: "Trykk på knappen hver gang en rad er ferdig. Vil du følge en oppskrift, legger du den inn under Rediger.",
       foot: null,
-      status: "Ingen oppskrift",
+      status: "Uten oppskrift",
     };
   }
   const prefix = project.example ? "Eksempel · " : "";
+  /* maskeantallet er bare interessant når oppskriften øker eller feller */
+  const stitches = hasShaping(segs);
   if (loc.finished || !loc.seg) {
     return {
-      title: "Oppskriften er ferdig",
-      sub: `${masker(loc.st)} på pinnen`,
-      foot: "Ingen flere deler.",
-      status: `${prefix}Alle ${deler(segs.length)} er strikket`,
+      eyebrow: "",
+      title: "Ferdig strikket",
+      sub: stitches ? `${masker(loc.st)} på pinnen. Alle delene er gjort.` : "Alle delene er gjort.",
+      foot: null,
+      status: `${prefix}Alle ${deler(segs.length)} er ferdige`,
     };
   }
   const s = loc.seg;
-  const part = `${prefix}Del ${s.i + 1} av ${segs.length}`;
-  if (s.type === "plain") {
-    if (s.open) {
-      return {
-        title: "Vanlig rad",
-        sub: masker(loc.st) + (s.note ? ` · ${s.note}` : ""),
-        foot: `Rad ${loc.r + 1} i denne delen. Trykk Neste del når du er ferdig.`,
-        status: part,
-      };
-    }
+  const status = `${prefix}Del ${s.i + 1} av ${segs.length}`;
+  const eyebrow = partLabel(s);
+  const join = (...bits: string[]) => bits.filter(Boolean).join(" · ");
+
+  if (s.type === "measure") {
+    const before = project.last[s.i];
     return {
-      title: "Vanlig rad",
-      sub: `${masker(loc.st)} · ${rader(s.len - loc.r)} igjen`,
+      eyebrow,
+      title: s.cm > 0 ? `Strikk til delen måler ${s.cm} cm` : s.note || "Strikk til delen er lang nok",
+      sub: join(s.cm > 0 ? s.note : "", stitches ? masker(loc.st) : "", before != null ? `forrige gang ble det ${rader(before)}` : ""),
+      foot: null,
+      status,
+    };
+  }
+  if (s.type === "plain") {
+    return {
+      eyebrow,
+      title: `Strikk ${rader(s.len)}`,
+      sub: join(`${rader(s.len - loc.r)} igjen`, stitches ? masker(loc.st) : "", s.note),
       foot: bar(loc.r / s.len),
-      status: part,
+      status,
     };
   }
   const inc = s.type === "inc";
   const word = inc ? "økning" : "felling";
   const after = Math.max(0, loc.st + (inc ? s.by : -s.by));
   return {
-    title: loc.shape ? `${inc ? "Øk" : "Fell"} ${masker(s.by)}` : "Vanlig rad",
+    eyebrow,
+    title: loc.shape ? `${inc ? "Øk" : "Fell"} ${masker(s.by)} på denne raden` : "Vanlig rad",
     sub: loc.shape
       ? `${loc.st} → ${masker(after)}`
       : `${masker(loc.st)} · ${loc.toNext === 1 ? `${word} på neste rad` : `${word} om ${rader(loc.toNext)}`}`,
@@ -77,6 +90,6 @@ export function rowInfo(project: Project, segs: Segment[], loc: Location): RowIn
       ) : (
         bar(loc.pos / s.every)
       ),
-    status: `${part} · ${loc.k} av ${s.times} ${inc ? "økninger" : "fellinger"}`,
+    status: `${status} · ${loc.k} av ${s.times} ${inc ? "økninger" : "fellinger"}`,
   };
 }

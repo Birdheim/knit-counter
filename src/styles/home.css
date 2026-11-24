@@ -4,8 +4,9 @@
   padding:max(var(--pad),env(safe-area-inset-top)) max(var(--pad),env(safe-area-inset-right))
           max(var(--pad),28px,env(safe-area-inset-bottom)) max(var(--pad),env(safe-area-inset-left));
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(8px,2.5vh,24px);
-  text-align:center;
+  text-align:center;position:relative;
 }
+.home-bar{position:absolute;top:max(var(--pad),env(safe-area-inset-top));right:max(var(--pad),env(safe-area-inset-right))}
 .home-scene{width:100%;max-width:min(520px,58vh)}
 .home-text{width:100%;display:flex;flex-direction:column;align-items:center;gap:clamp(6px,1.4vh,12px)}
 .scene{display:block;width:100%;height:auto;overflow:visible;touch-action:manipulation}

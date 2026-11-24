@@ -3,7 +3,7 @@ import { clean } from "./clean";
 import { createSync, type CloudAdapter, type CloudUser } from "./sync";
 import type { AppState } from "./types";
 
-const project = (id: string, name: string, count: number) => ({ id, name, count, yarn: "bringebaer", castOn: 5, parts: [], closed: {}, example: false });
+const project = (id: string, name: string, count: number) => ({ id, name, count, yarn: "bringebaer", castOn: 5, parts: [], closed: {}, last: {}, example: false });
 const tick = (ms = 30) => new Promise((r) => setTimeout(r, ms));
 const names = (s: AppState | undefined) => s?.projects.map((p) => `${p.name}:${p.count}`);
 
@@ -25,7 +25,7 @@ function fakeCloud(initial?: AppState) {
         cb(null);
       },
       async signIn() {
-        emit({ uid: "u1", label: "herman@example.com" });
+        emit({ uid: "u1", name: "Herman Test", email: "herman@example.com" });
       },
       async signOut() {
         emit(null);
@@ -83,7 +83,7 @@ describe("synk mot kontoen", () => {
     await tick();
     expect(names(d.state)).toEqual(["Fra laptopen:40", "Lokalt:3"]);
     expect(names(cloud.remote)).toEqual(["Fra laptopen:40", "Lokalt:3"]);
-    expect(d.sync.status().signedIn).toBe(true);
+    expect(d.sync.status()).toMatchObject({ signedIn: true, name: "Herman Test", email: "herman@example.com", sync: "synced" });
   });
 
   it("tar ikke med det urørte eksempelprosjektet inn på kontoen", async () => {
@@ -136,6 +136,7 @@ describe("synk mot kontoen", () => {
     await tick();
     cloud.offline = true;
     d.change((s) => void s.projects[0].count++);
+    expect(d.sync.status().sync).toBe("pending");
     expect(await d.sync.signOut()).toMatch(/ikke lagret på kontoen/);
     expect(d.sync.status().signedIn).toBe(true);
     expect(names(d.state)).toEqual(["Fra laptopen:41"]);
@@ -157,7 +158,7 @@ describe("synk mot kontoen", () => {
 
   it("sier fra når innlogging ikke er satt opp", () => {
     const sync = createSync({ getState: () => clean({}), replaceState: () => {}, touch: () => {}, loadAdapter: null });
-    expect(sync.status()).toMatchObject({ signedIn: false, canSignIn: false });
+    expect(sync.status()).toMatchObject({ available: false, signedIn: false, canSignIn: false, sync: "local" });
     expect(sync.status().text).toMatch(/ikke satt opp/);
   });
 });
