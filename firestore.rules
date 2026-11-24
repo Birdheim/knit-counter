@@ -1,0 +1,11 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Hver bruker har ett dokument med prosjektene og oppskriftsbanken sin,
+    // og bare den innloggede brukeren selv får lese eller skrive det.
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="nb" data-yarn="bringebaer">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Strikketeller</title>
+<meta name="description" content="Radteller for strikking som følger oppskriften og sier fra når du skal øke eller felle.">
+<meta name="theme-color" content="#F4EEF3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#211925" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Strikketeller">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Grandstander:wght@500;700;800&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="id">
+      <button class="proj" id="open-projects" type="button" aria-haspopup="dialog" aria-label="Bytt prosjekt"><span id="proj-name"></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+      <p class="status" id="status"></p>
+    </div>
+    <button class="icon-btn" id="open-setup" type="button" aria-haspopup="dialog" aria-label="Oppsett for dette prosjektet">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h8M20 8h-1M4 16h1M12 16h8" fill="none"/><circle cx="15.5" cy="8" r="3"/><circle cx="8.5" cy="16" r="3"/></svg>
+    </button>
+  </header>
+
+  <section class="now" id="now" aria-live="polite">
+    <h1 class="now-title" id="now-title"></h1>
+    <p class="now-sub" id="now-sub"></p>
+    <div class="now-foot" id="now-foot"></div>
+  </section>
+
+  <div class="stage">
+    <button class="ball" id="add" type="button" aria-label="Raden er ferdig">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <path class="strand" d="M27 14 Q50 4 73 14"/>
+        <path class="strand" d="M17 22 Q50 8 83 22"/>
+        <path class="strand" d="M17 78 Q50 92 83 78"/>
+        <path class="strand" d="M27 86 Q50 96 73 86"/>
+      </svg>
+      <span class="ball-lab">Rad</span>
+      <span class="num" id="num">1</span>
+      <span class="ball-hint">Trykk når raden er ferdig</span>
+    </button>
+  </div>
+
+  <div class="foot">
+    <button class="ghost" id="undo" type="button">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5 4 9l4 4"/><path d="M4 9h10a5 5 0 0 1 0 10H9"/></svg>Angre
+    </button>
+    <button class="next" id="next" type="button" hidden>Neste del</button>
+  </div>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+  <button class="shade" type="button" data-close aria-label="Lukk oppsett"></button>
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+    <div class="card-head">
+      <h2 id="sheet-title">Oppsett</h2>
+      <button class="done" type="button" data-close>Ferdig</button>
+    </div>
+    <div class="card-body">
+      <section class="sec">
+        <h3><label for="name">Navn på prosjektet</label></h3>
+        <input class="text" id="name" type="text" maxlength="40" autocomplete="off" spellcheck="false">
+      </section>
+
+      <section class="sec">
+        <h3>Oppskrift</h3>
+        <p class="note" id="example-note">Dette er et eksempel. Bytt ut tallene med dem som står i oppskriften din.</p>
+        <p class="line"><label for="cast-on">Legg opp</label> <input class="n" id="cast-on" type="text" inputmode="numeric" autocomplete="off"> masker</p>
+        <ol class="parts" id="parts"></ol>
+        <button class="btn" id="add-part" type="button">Legg til del</button>
+        <p id="total"></p>
+        <div class="picks" id="picks" hidden>
+          <p>Eller hent en oppskrift fra banken:</p>
+        </div>
+        <button class="btn" id="save-bank" type="button">Lagre oppskriften i banken</button>
+      </section>
+
+      <section class="sec">
+        <h3 id="yarn-h">Garnfarge <span id="yarn-name"></span></h3>
+        <div class="yarns" id="yarns" role="radiogroup" aria-labelledby="yarn-h"></div>
+      </section>
+
+      <section class="sec">
+        <h3>Start på nytt</h3>
+        <p>Hold knappen inne i to sekunder. Oppskriften blir stående.</p>
+        <button class="btn hold" id="reset" type="button"><span id="reset-lab">Hold inne for å gå tilbake til rad 1</span></button>
+        <button class="btn" id="restore" type="button" hidden></button>
+      </section>
+
+      <section class="sec">
+        <h3>Slett prosjektet</h3>
+        <p>Hold knappen inne i to sekunder. Oppskrifter du har lagret i banken, blir liggende.</p>
+        <button class="btn hold" id="delete" type="button"><span>Hold inne for å slette prosjektet</span></button>
+      </section>
+
+      <section class="sec">
+        <h3>Konto</h3>
+        <p id="sync">Lagres på denne enheten.</p>
+        <button class="btn" id="sign-in" type="button" hidden>Logg inn med Google</button>
+        <button class="btn" id="sign-out" type="button" hidden>Logg ut</button>
+        <p class="note" id="auth-error" role="alert" hidden></p>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div class="sheet" id="psheet" hidden>
+  <button class="shade" type="button" data-close aria-label="Lukk prosjekter"></button>
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="psheet-title">
+    <div class="card-head">
+      <h2 id="psheet-title">Prosjekter</h2>
+      <button class="done" type="button" data-close>Ferdig</button>
+    </div>
+    <div class="card-body">
+      <section class="sec">
+        <h3>Det du holder på med</h3>
+        <ul class="rows" id="proj-list"></ul>
+      </section>
+      <section class="sec">
+        <h3>Start et nytt prosjekt</h3>
+        <p id="bank-help">Velg en oppskrift fra banken. Tellingen starter på rad 1.</p>
+        <ul class="rows" id="bank-list"></ul>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
